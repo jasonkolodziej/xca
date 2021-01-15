@@ -43,8 +43,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       newpkg: ${{ steps.git-check.outputs.modified }} # map step output to job output
-      url: ${{steps.setURLvar.outputs.URL}}
-      version: ${{steps.setURLvar.outputs.TAG}}
+      url: ${{ steps.setURLvar.outputs.URL }}
+      version: ${{ steps.setURLvar.outputs.TAG }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -64,7 +64,7 @@ jobs:
           git push
       - name: Grab JSON response
         id: setJsonVar
-        # if: steps.git-check.outputs.modified == 'true'
+        if: steps.git-check.outputs.modified == 'true'
         run: |
           content=`cat ./xca-release.json`
           # content=`curl -sL https://api.github.com/repos/chris2511/xca/releases/latest`
@@ -76,7 +76,7 @@ jobs:
           echo "::set-output name=jsonApiResponse::${content}"
       - name: Find & Set URL var
         id: setURLvar
-        # if: steps.git-check.outputs.modified == 'true'
+        if: steps.git-check.outputs.modified == 'true'
         run: |
           TAG=${{fromJson(steps.setJsonVar.outputs.jsonApiResponse).tag_name}}
           TAG="${TAG//RELEASE.}"
@@ -97,7 +97,7 @@ jobs:
   recreate-choco:
     runs-on: windows-latest
     needs: check-xca-release
-    # if: ${{needs.check-xca-release.outputs.newpkg}} == 'true'
+    if: ${{ needs.check-xca-release.outputs.newpkg }} == 'true'
     steps:
       -
         name: Checkout
