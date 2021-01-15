@@ -77,6 +77,8 @@ jobs:
       - run: |
           echo ${{steps.setURLvar.outputs.URL}}
           sed -i '18s/.*/$url='\''ughugh'\''/' ./tools/chocolateyinstall.ps1
+          git config --global user.name 'Jason Kolodziej'
+          git config --global user.email 'jason.a.kolodziej@users.noreply.github.com'
           git commit -am "Updated choco package to meet version"
           git push
           # echo "${{fromJson(steps.setJsonVar.outputs.jsonApiResponse).assets[1].browser_download_url}}"
