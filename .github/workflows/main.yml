@@ -76,4 +76,5 @@ jobs:
           echo ::set-output name=URL::${{fromJson(steps.setJsonVar.outputs.jsonApiResponse).assets[1].browser_download_url}}
       - run: |
           echo ${{steps.setURLvar.outputs.URL}}
+          sed -i '18s/.*/$url='\''ughugh'\''/' ./tools/chocolateyinstall.ps1
           # echo "${{fromJson(steps.setJsonVar.outputs.jsonApiResponse).assets[1].browser_download_url}}"
