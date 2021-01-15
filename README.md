@@ -1,3 +1,4 @@
+![Autonomous](https://github.com/jasonkolodziej/xca/workflows/Autonomous/badge.svg?branch=main)
 # xca
 chris2511's X Certificate and Key management as a choco install
 
