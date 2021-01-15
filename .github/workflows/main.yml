@@ -107,3 +107,10 @@ jobs:
         uses: crazy-max/ghaction-chocolatey@v1
         with:
           args: new xca -a --version ${{needs.check-xca-release.outputs.version}} silentargs="'/qb'" url="'${{needs.check-xca-release.outputs.url}}'" installertype="'msi'"
+      - name: Move files to parent
+        run: |
+          cd xca; Get-ChildItem -Path . | Copy-Item -Destination .. -Recurse -Container -Force; cd ..; rm -r xca
+          git config --global user.name 'Jason Kolodziej'
+          git config --global user.email 'jason.a.kolodziej@users.noreply.github.com'
+          git commit -am "Updated choco package to meet version"
+          git push
