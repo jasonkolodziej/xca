@@ -10,16 +10,17 @@ No means of infringement here.
 # Installing package
 ## Chocolatey is assumed to be installed.
 > Using PowerShell
+>> Where `[VERSION]` is the tagged release you want to install.
 ```
-Invoke-WebRequest https://github.com/jasonkolodziej/xca/archive/2.3.0.zip -OutFile C:\tmp\xca-2.3.0.zip
+Invoke-WebRequest https://github.com/jasonkolodziej/xca/archive/[VERSION].zip -OutFile C:\tmp\xca-[VERSION].zip
 
-Expand-Archive -LiteralPath C:\tmp\xca-2.3.0.zip -DestinationPath C:\tmp\xca-2.3.0
+Expand-Archive -LiteralPath C:\tmp\xca-[VERSION].zip -DestinationPath C:\tmp\xca-[VERSION]
 
-choco install xca -s C:\tmp\xca-2.3.0
+choco install xca -s C:\tmp\xca-[VERSION]
 
-choco uninstall xca -s C:\tmp\xca-2.3.0
+choco uninstall xca -s C:\tmp\xca-[VERSION]
 
-rm C:\tmp\xca-2.3.0 -r -fo
+rm C:\tmp\xca-[VERSION] -r -fo
 
-rm C:\tmp\xca-2.3.0.zip -fo
+rm C:\tmp\xca-[VERSION].zip -fo
 ```
