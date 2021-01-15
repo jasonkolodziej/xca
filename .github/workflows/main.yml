@@ -75,9 +75,9 @@ jobs:
         run: |
           echo ::set-output name=URL::${{fromJson(steps.setJsonVar.outputs.jsonApiResponse).assets[1].browser_download_url}}
       - run: |
-          url=${{steps.setURLvar.outputs.URL}}
-          echo $url
-          sed -i '18s/.*/$url='\''${url}'\''/' ./tools/chocolateyinstall.ps1
+          FIX=${{steps.setURLvar.outputs.URL}}
+          echo $FIX
+          sed -i "18s|.*|$url='$FIX'|g" ./tools/chocolateyinstall.ps1
           git config --global user.name 'Jason Kolodziej'
           git config --global user.email 'jason.a.kolodziej@users.noreply.github.com'
           git commit -am "Updated choco package to meet version"
