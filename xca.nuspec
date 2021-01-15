@@ -49,7 +49,13 @@ This is a nuspec. It mostly adheres to https://docs.nuget.org/create/Nuspec-Refe
     <!--<bugTrackerUrl></bugTrackerUrl>-->
     <tags>xca SPACE_SEPARATED</tags>
     <summary>__REPLACE__</summary>
-    <description>__REPLACE__MarkDown_Okay </description>
+    <description>__REPLACE__MarkDown_Okay 
+
+
+**Please Note**: This is an automatically updated package. If you find it is 
+out of date by more than a day or two, please contact the maintainer(s) and
+let them know the package is no longer updating correctly.
+</description>
     <!-- <releaseNotes>__REPLACE_OR_REMOVE__MarkDown_Okay</releaseNotes> -->
     <!-- =============================== -->      
 
