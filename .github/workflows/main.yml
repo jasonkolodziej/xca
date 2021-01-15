@@ -75,5 +75,5 @@ jobs:
         run: |
           echo ::set-output name=URL::${{fromJson(steps.setJsonVar.outputs.jsonApiResponse).assets[1].browser_download_url}}
       - run: |
-          echo ${steps.setURLvar.outputs.URL}
+          echo ${{steps.setURLvar.outputs.URL}}
           # echo "${{fromJson(steps.setJsonVar.outputs.jsonApiResponse).assets[1].browser_download_url}}"
