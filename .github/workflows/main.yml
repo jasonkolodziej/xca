@@ -97,7 +97,7 @@ jobs:
   recreate-choco:
     runs-on: windows-latest
     needs: check-xca-release
-    if: ${{needs.check-xca-release.outputs.newpkg}} == 'true'
+    # if: ${{needs.check-xca-release.outputs.newpkg}} == 'true'
     steps:
       -
         name: Checkout
@@ -114,3 +114,15 @@ jobs:
           git config --global user.email 'jason.a.kolodziej@users.noreply.github.com'
           git commit -am "Updated choco package to meet version"
           git push
+            - name: Create Release
+      - 
+        name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ needs.check-xca-release.outputs.version  }}
+          release_name: Release ${{ needs.check-xca-release.outputs.version }}
+          draft: false
+          prerelease: false
