@@ -50,4 +50,4 @@ jobs:
           # end of optional handling for multi line json
           echo "::set-output name=jsonApiResponse::${content}"
       - run: |
-          echo "${{fromJson(steps.set_var.outputs.jsonApiResponse).url}}"  
+          echo "${{fromJson(steps.set_var.outputs.jsonApiResponse).assets[2].browser_download_url}}"  
