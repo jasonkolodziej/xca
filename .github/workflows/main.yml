@@ -58,8 +58,8 @@ jobs:
           git config --global user.email 'jason.a.kolodziej@users.noreply.github.com'
           git commit -am "New release version"
           git push
-      - name: Find URL Download variable
-        id: set_URL_var
+      - name: Grab JSON response
+        id: setJsonVar
         # if: steps.git-check.outputs.modified == 'true'
         run: |
           content=`cat ./xca-release.json`
@@ -69,9 +69,11 @@ jobs:
           content="${content//$'\n'/'%0A'}"
           content="${content//$'\r'/'%0D'}"
           # end of optional handling for multi line json
-          # echo "::set-output name=jsonApiResponse::${content}"
-          echo "::set-output name=URL::${{fromJson(${content}).assets[1].browser_url_download}}"
-          # echo "::set-output name=URL::${{fromJson(steps.set_URL_var.outputs.jsonApiResponse).assets[1].browser_download_url}}"
+          echo "::set-output name=jsonApiResponse::${content}"
+      - name: Find & Set URL var
+        id: setURLvar
+        run: |
+          echo ::set-output name=URL::${{fromJson(steps.setJsonVar.outputs.jsonApiResponse).assets[1].browser_download_url}}
       - run: |
-          echo "${{steps.set_URL_var.outputs.URL}}"
-          # echo "${{fromJson(steps.set_URL_var.outputs.jsonApiResponse).assets[1].browser_download_url}}"
+          echo ${steps.setURLvar.outputs.URL}
+          # echo "${{fromJson(steps.setJsonVar.outputs.jsonApiResponse).assets[1].browser_download_url}}"
