@@ -35,9 +35,9 @@
 #           echo Add other actions to build,
 #           echo test, and deploy your project.
 name: Autonomous
-on: workflow_dispatch
-  # schedule:
-  #  - cron:  '0 10 * * *'
+on: # workflow_dispatch
+ schedule:
+  - cron:  '0 10 * * *'
 jobs:
   get-version:
     runs-on: ubuntu-latest
@@ -60,7 +60,7 @@ jobs:
           git push
       - name: Grab JSON response
         id: setJsonVar
-        # if: steps.git-check.outputs.modified == 'true'
+        if: steps.git-check.outputs.modified == 'true'
         run: |
           content=`cat ./xca-release.json`
           # content=`curl -sL https://api.github.com/repos/chris2511/xca/releases/latest`
@@ -72,9 +72,12 @@ jobs:
           echo "::set-output name=jsonApiResponse::${content}"
       - name: Find & Set URL var
         id: setURLvar
+        if: steps.git-check.outputs.modified == 'true'
         run: |
           echo ::set-output name=URL::${{fromJson(steps.setJsonVar.outputs.jsonApiResponse).assets[1].browser_download_url}}
-      - run: |
+      - name: Write line
+        if: steps.git-check.outputs.modified == 'true'
+        run: |
           FIX=${{steps.setURLvar.outputs.URL}}
           url='$url'
           echo $url $FIX
