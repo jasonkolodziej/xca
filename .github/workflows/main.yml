@@ -70,5 +70,7 @@ jobs:
           content="${content//$'\r'/'%0D'}"
           # end of optional handling for multi line json
           echo "::set-output name=jsonApiResponse::${content}"
+          echo "::set-output name=URL::${{fromJson(steps.set_URL_var.outputs.jsonApiResponse).assets[1].browser_download_url}}"
       - run: |
-          echo "${{fromJson(steps.set_URL_var.outputs.jsonApiResponse).assets[1].browser_download_url}}"
+          echo "${{steps.set_URL_var.outputs.URL}}"
+          # echo "${{fromJson(steps.set_URL_var.outputs.jsonApiResponse).assets[1].browser_download_url}}"
