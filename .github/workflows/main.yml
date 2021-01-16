@@ -72,7 +72,7 @@ jobs:
           LTAG=${{fromJson(steps.fetchReleases.outputs.currentResponse).tag_name}}
           LTAG="${LTAG//RELEASE.}"
           MOD=$([ $LTAG == $CTAG ] && echo "false" || echo "true")
-          echo $LTAG $CTAG
+          echo $LTAG $CTAG $MOD
           echo "::set-output name=modified::${MOD}"
           echo "::set-output name=TAG::${LTAG}"
           echo ::set-output name=URL::${{fromJson(steps.fetchReleases.outputs.currentResponse).assets[1].browser_download_url}}
