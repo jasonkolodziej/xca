@@ -71,8 +71,9 @@ jobs:
           CTAG="${CTAG//RELEASE.}"
           LTAG=${{fromJson(steps.fetchReleases.outputs.currentResponse).tag_name}}
           LTAG="${LTAG//RELEASE.}"
+          MOD=$([ $LTAG == $CTAG ] && echo "false" || echo "true")
           echo $LTAG $CTAG
-          echo ::set-output name=modified::$([ $LTAG == $CTAG ] && echo "false" || echo "true")
+          echo "::set-output name=modified::${MOD}"
           echo "::set-output name=TAG::${LTAG}"
           echo ::set-output name=URL::${{fromJson(steps.fetchReleases.outputs.currentResponse).assets[1].browser_download_url}}
 #       - name: Check for modified url
@@ -121,15 +122,18 @@ jobs:
   recreate-choco:
     runs-on: windows-latest
     needs: check-xca-release
+    if: ${{ needs.check-xca-release.outputs.newpkg }} == 'true'
     steps:
       -
         name: Checkout
+        if: ${{ needs.check-xca-release.outputs.newpkg }} == 'true'
         uses: actions/checkout@v2
         with:
          token: ${{ secrets.SCOPED_TOKEN }}
          fetch-depth: 0
       -
         name: Choco new
+        if: ${{ needs.check-xca-release.outputs.newpkg }} == 'true'
         uses: crazy-max/ghaction-chocolatey@v1
         with:
           args: new xca -a --version ${{needs.check-xca-release.outputs.version}} silentargs="'/qb'" url="'${{needs.check-xca-release.outputs.url}}'" installertype="'msi'"
