@@ -67,14 +67,14 @@ jobs:
       - name: Parse URL vars
         id: parseURLs
         run: |
-          CTAG=${{fromJson(steps.fetchReleases.outputs.currentContent).tag_name}}
+          CTAG=${{fromJson(steps.fetchReleases.outputs.prevResponse).tag_name}}
           CTAG="${CTAG//RELEASE.}"
-          LTAG=${{fromJson(steps.fetchReleases.outputs.latestContent).tag_name}}
+          LTAG=${{fromJson(steps.fetchReleases.outputs.currentResponse).tag_name}}
           LTAG="${LTAG//RELEASE.}"
           echo $LTAG $CTAG
           echo ::set-output name=modified::$([ $LTAG == $CTAG ] && echo "false" || echo "true")
           echo "::set-output name=TAG::${LTAG}"
-          echo ::set-output name=URL::${{fromJson(steps.fetchReleases.outputs.latestContent).assets[1].browser_download_url}}
+          echo ::set-output name=URL::${{fromJson(steps.fetchReleases.outputs.currentResponse).assets[1].browser_download_url}}
 #       - name: Check for modified url
 #         id: git-check
 #         run: | # echo ::set-output name=modified::$([ -z "`git status --porcelain`" ] && echo "false" || echo "true")
