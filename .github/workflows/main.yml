@@ -121,12 +121,12 @@ jobs:
   recreate-choco:
     runs-on: windows-latest
     needs: check-xca-release
-    if: ${{ needs.check-xca-release.outputs.newpkg }} == 'true'
     steps:
       -
         name: Checkout
         uses: actions/checkout@v2
         with:
+         token: ${{ secrets.SCOPED_TOKEN }}
          fetch-depth: 0
       -
         name: Choco new
@@ -140,10 +140,13 @@ jobs:
           $f = '.\tools\chocolateyuninstall.ps1'; gc $f | ? {$_ -notmatch "^\s*#"} | % {$_ -replace '(^.*?)\s*?[^``]#.*','$1'} | Out-File $f+".~" -en utf8; mv -fo $f+".~" $f
           $f = '.\tools\chocolateyinstall.ps1'; gc $f | ? {$_ -notmatch "^\s*#"} | % {$_ -replace '(^.*?)\s*?[^``]#.*','$1'} | Out-File $f+".~" -en utf8; mv -fo $f+".~" $f
           Get-ChildItem -Path . | Copy-Item -Destination .. -Recurse -Container -Force; cd ..; rm -r xca
+          git config --global user.name 'Jason Kolodziej'
+          git config --global user.email 'jason.a.kolodziej@users.noreply.github.com'
           git commit -am "Updated choco package to meet version"
           git push
       - 
         name: Create Release
+        if: ${{ needs.check-xca-release.outputs.newpkg }} == 'true'
         id: create_release
         uses: actions/create-release@v1
         env:
