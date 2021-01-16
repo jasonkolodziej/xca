@@ -122,16 +122,16 @@ jobs:
   recreate-choco:
     runs-on: windows-latest
     needs: [checkXcaRelease]
-    if: ${{ needs.checkXcaRelease.outputs.newpkg }} == 'true'
+    if: needs.checkXcaRelease.outputs.newpkg == 'true'
     steps:
       - name: Checkout
-        if: ${{ needs.checkXcaRelease.outputs.newpkg }} == 'true'
+        if: needs.checkXcaRelease.outputs.newpkg == 'true'
         uses: actions/checkout@v2
         with:
          token: ${{ secrets.SCOPED_TOKEN }}
          fetch-depth: 0
       - name: Choco new
-        if: ${{ needs.checkXcaRelease.outputs.newpkg }} == 'true'
+        if: needs.checkXcaRelease.outputs.newpkg == 'true'
         uses: crazy-max/ghaction-chocolatey@v1
         with:
           args: new xca -a --version ${{needs.checkXcaRelease.outputs.version}} silentargs="'/qb'" url="'${{needs.checkXcaRelease.outputs.url}}'" installertype="'msi'"
@@ -146,7 +146,7 @@ jobs:
           git commit -am "Updated choco package to meet version"
           git push
       - name: Create Release
-        if: ${{ needs.checkXcaRelease.outputs.newpkg }} == 'true'
+        if: needs.checkXcaRelease.outputs.newpkg == 'true'
         id: create_release
         uses: actions/create-release@v1
         env:
