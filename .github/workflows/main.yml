@@ -39,7 +39,7 @@ on:   workflow_dispatch
 # schedule:
  # - cron:  '0 10 * * *'
 jobs:
-  check-xca-release:
+  checkXcaRelease:
     runs-on: ubuntu-latest
     outputs:
       newpkg: ${{ steps.parseURLs.outputs.modified }} # map step output to job output
@@ -121,24 +121,21 @@ jobs:
 #           # echo "${{fromJson(steps.setJsonVar.outputs.jsonApiResponse).assets[1].browser_download_url}}
   recreate-choco:
     runs-on: windows-latest
-    needs: [check-xca-release]
-    if: ${{ needs.check-xca-release.outputs.newpkg }} == 'true'
+    needs: [checkXcaRelease]
+    if: ${{ needs.checkXcaRelease.outputs.newpkg }} == 'true'
     steps:
-      -
-        name: Checkout
-        if: ${{ needs.check-xca-release.outputs.newpkg }} == 'true'
+      - name: Checkout
+        if: ${{ needs.checkXcaRelease.outputs.newpkg }} == 'true'
         uses: actions/checkout@v2
         with:
          token: ${{ secrets.SCOPED_TOKEN }}
          fetch-depth: 0
-      -
-        name: Choco new
-        if: ${{ needs.check-xca-release.outputs.newpkg }} == 'true'
+      - name: Choco new
+        if: ${{ needs.checkXcaRelease.outputs.newpkg }} == 'true'
         uses: crazy-max/ghaction-chocolatey@v1
         with:
-          args: new xca -a --version ${{needs.check-xca-release.outputs.version}} silentargs="'/qb'" url="'${{needs.check-xca-release.outputs.url}}'" installertype="'msi'"
-      - 
-        name: Move files to parent
+          args: new xca -a --version ${{needs.checkXcaRelease.outputs.version}} silentargs="'/qb'" url="'${{needs.checkXcaRelease.outputs.url}}'" installertype="'msi'"
+      - name: Move files to parent
         run: |
           cd xca; Rename-Item ReadMe.md -NewName choco_readme.md
           $f = '.\tools\chocolateyuninstall.ps1'; gc $f | ? {$_ -notmatch "^\s*#"} | % {$_ -replace '(^.*?)\s*?[^``]#.*','$1'} | Out-File $f+".~" -en utf8; mv -fo $f+".~" $f
@@ -148,15 +145,14 @@ jobs:
           git config --global user.email 'jason.a.kolodziej@users.noreply.github.com'
           git commit -am "Updated choco package to meet version"
           git push
-      - 
-        name: Create Release
-        if: ${{ needs.check-xca-release.outputs.newpkg }} == 'true'
+      - name: Create Release
+        if: ${{ needs.checkXcaRelease.outputs.newpkg }} == 'true'
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: ${{ needs.check-xca-release.outputs.version  }}
-          release_name: Release ${{ needs.check-xca-release.outputs.version }}
+          tag_name: ${{ needs.checkXcaRelease.outputs.version  }}
+          release_name: Release ${{ needs.checkXcaRelease.outputs.version }}
           draft: false
           prerelease: false
