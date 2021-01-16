@@ -50,38 +50,62 @@ jobs:
         with:
           token: ${{ secrets.SCOPED_TOKEN }}
       - name: Fetch release version
+        id: fetchReleases
         run: |
-          curl -sL https://api.github.com/repos/chris2511/xca/releases/latest > xca-release.json
-      - name: Check for modified files
-        id: git-check
-        run: echo ::set-output name=modified::$([ -z "`git status --porcelain`" ] && echo "false" || echo "true")
+          latestContent=`curl -sL https://api.github.com/repos/chris2511/xca/releases/latest`
+          currentContent=`cat ./xca-release.json`
+          # curl -sL https://api.github.com/repos/chris2511/xca/releases/latest > xca-release.json
+          currentContent="${currentContent//'%'/'%25'}"
+          currentContent="${currentContent//$'\n'/'%0A'}"
+          currentContent="${currentContent//$'\r'/'%0D'}"
+          latestContent="${latestContent//'%'/'%25'}"
+          latestContent="${latestContent//$'\n'/'%0A'}"
+          latestContent="${latestContent//$'\r'/'%0D'}"
+          # end of optional handling for multi line json
+          echo "::set-output name=prevResponse::${currentContent}"
+          echo "::set-output name=currentResponse::${latestContent}"
+      - name: Parse URL vars
+        id: parseURLs
+        run: |
+          CTAG=${{fromJson(steps.fetchReleases.outputs.currentContent).tag_name}}
+          CTAG="${CTAG//RELEASE.}"
+          LTAG=${{fromJson(steps.fetchReleases.outputs.latestContent).tag_name}}
+          LTAG="${LTAG//RELEASE.}"
+          echo $LTAG $CTAG
+          echo ::set-output name=modified::$([ $LTAG == $CTAG ] && echo "false" || echo "true")
+          echo "::set-output name=TAG::${LTAG}"
+          echo ::set-output name=URL::${{fromJson(steps.fetchReleases.outputs.latestContent).assets[1].browser_download_url}}
+#       - name: Check for modified url
+#         id: git-check
+#         run: | # echo ::set-output name=modified::$([ -z "`git status --porcelain`" ] && echo "false" || echo "true")
       - name: Commit latest release version
         if: steps.git-check.outputs.modified == 'true'
         run: |
+          curl -sL https://api.github.com/repos/chris2511/xca/releases/latest > xca-release.json
           git config --global user.name 'Jason Kolodziej'
           git config --global user.email 'jason.a.kolodziej@users.noreply.github.com'
-          git commit -am "New release version"
+          git commit -am "Store new release version metadata"
           git push
-      - name: Grab JSON response
-        id: setJsonVar
-        if: steps.git-check.outputs.modified == 'true'
-        run: |
-          content=`cat ./xca-release.json`
-          # content=`curl -sL https://api.github.com/repos/chris2511/xca/releases/latest`
-          # the following lines are only required for multi line json
-          content="${content//'%'/'%25'}"
-          content="${content//$'\n'/'%0A'}"
-          content="${content//$'\r'/'%0D'}"
-          # end of optional handling for multi line json
-          echo "::set-output name=jsonApiResponse::${content}"
-      - name: Find & Set URL var
-        id: setURLvar
-        if: steps.git-check.outputs.modified == 'true'
-        run: |
-          TAG=${{fromJson(steps.setJsonVar.outputs.jsonApiResponse).tag_name}}
-          TAG="${TAG//RELEASE.}"
-          echo "::set-output name=TAG::${TAG}"
-          echo ::set-output name=URL::${{fromJson(steps.setJsonVar.outputs.jsonApiResponse).assets[1].browser_download_url}}
+#       - name: Grab JSON response
+#         id: setJsonVar
+#         if: steps.git-check.outputs.modified == 'true'
+#         run: |
+#           content=`cat ./xca-release.json`
+#           # content=`curl -sL https://api.github.com/repos/chris2511/xca/releases/latest`
+#           # the following lines are only required for multi line json
+#           content="${content//'%'/'%25'}"
+#           content="${content//$'\n'/'%0A'}"
+#           content="${content//$'\r'/'%0D'}"
+#           # end of optional handling for multi line json
+#           echo "::set-output name=jsonApiResponse::${content}"
+#       - name: Find & Set URL var
+#         id: setURLvar
+#         if: steps.git-check.outputs.modified == 'true'
+#         run: |
+#           TAG=${{fromJson(steps.setJsonVar.outputs.jsonApiResponse).tag_name}}
+#           TAG="${TAG//RELEASE.}"
+#           echo "::set-output name=TAG::${TAG}"
+#           echo ::set-output name=URL::${{fromJson(steps.setJsonVar.outputs.jsonApiResponse).assets[1].browser_download_url}}
 #       - name: Write line
 #         if: steps.git-check.outputs.modified == 'true'
 #         run: |
@@ -114,8 +138,6 @@ jobs:
           $f = '.\tools\chocolateyuninstall.ps1'; gc $f | ? {$_ -notmatch "^\s*#"} | % {$_ -replace '(^.*?)\s*?[^``]#.*','$1'} | Out-File $f+".~" -en utf8; mv -fo $f+".~" $f
           $f = '.\tools\chocolateyinstall.ps1'; gc $f | ? {$_ -notmatch "^\s*#"} | % {$_ -replace '(^.*?)\s*?[^``]#.*','$1'} | Out-File $f+".~" -en utf8; mv -fo $f+".~" $f
           Get-ChildItem -Path . | Copy-Item -Destination .. -Recurse -Container -Force; cd ..; rm -r xca
-          git config --global user.name 'Jason Kolodziej'
-          git config --global user.email 'jason.a.kolodziej@users.noreply.github.com'
           git commit -am "Updated choco package to meet version"
           git push
       - 
