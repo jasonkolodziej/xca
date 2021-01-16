@@ -35,9 +35,9 @@
 #           echo Add other actions to build,
 #           echo test, and deploy your project.
 name: Autonomous
-on:  # workflow_dispatch
- schedule:
-  - cron:  '0 10 * * *'
+on:   workflow_dispatch
+# schedule:
+ # - cron:  '0 10 * * *'
 jobs:
   check-xca-release:
     runs-on: ubuntu-latest
@@ -110,7 +110,7 @@ jobs:
       - 
         name: Move files to parent
         run: |
-          cd xca; Rename-Item ReadMe.md -NewName choco-readme.md
+          cd xca; Rename-Item ReadMe.md -NewName choco_readme.md
           $f = '.\tools\chocolateyuninstall.ps1'; gc $f | ? {$_ -notmatch "^\s*#"} | % {$_ -replace '(^.*?)\s*?[^``]#.*','$1'} | Out-File $f+".~" -en utf8; mv -fo $f+".~" $f
           $f = '.\tools\chocolateyinstall.ps1'; gc $f | ? {$_ -notmatch "^\s*#"} | % {$_ -replace '(^.*?)\s*?[^``]#.*','$1'} | Out-File $f+".~" -en utf8; mv -fo $f+".~" $f
           Get-ChildItem -Path . | Copy-Item -Destination .. -Recurse -Container -Force; cd ..; rm -r xca
