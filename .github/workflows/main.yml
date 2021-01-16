@@ -121,7 +121,7 @@ jobs:
 #           # echo "${{fromJson(steps.setJsonVar.outputs.jsonApiResponse).assets[1].browser_download_url}}
   recreate-choco:
     runs-on: windows-latest
-    needs: check-xca-release
+    needs: [check-xca-release]
     if: ${{ needs.check-xca-release.outputs.newpkg }} == 'true'
     steps:
       -
