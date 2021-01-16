@@ -42,9 +42,9 @@ jobs:
   check-xca-release:
     runs-on: ubuntu-latest
     outputs:
-      newpkg: ${{ steps.git-check.outputs.modified }} # map step output to job output
-      url: ${{ steps.setURLvar.outputs.URL }}
-      version: ${{ steps.setURLvar.outputs.TAG }}
+      newpkg: ${{ steps.parseURLs.outputs.modified }} # map step output to job output
+      url: ${{ steps.parseURLs.outputs.URL }}
+      version: ${{ steps.parseURLs.outputs.TAG }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -79,7 +79,7 @@ jobs:
 #         id: git-check
 #         run: | # echo ::set-output name=modified::$([ -z "`git status --porcelain`" ] && echo "false" || echo "true")
       - name: Commit latest release version
-        if: steps.git-check.outputs.modified == 'true'
+        if: steps.parseURLs.outputs.modified == 'true'
         run: |
           curl -sL https://api.github.com/repos/chris2511/xca/releases/latest > xca-release.json
           git config --global user.name 'Jason Kolodziej'
