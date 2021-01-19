@@ -35,9 +35,9 @@
 #           echo Add other actions to build,
 #           echo test, and deploy your project.
 name: Autonomous
-on:   workflow_dispatch
-# schedule:
- # - cron:  '0 10 * * *'
+on:   # workflow_dispatch
+ schedule:
+  - cron:  '0 10 * * *'
 jobs:
   checkXcaRelease:
     runs-on: ubuntu-latest
